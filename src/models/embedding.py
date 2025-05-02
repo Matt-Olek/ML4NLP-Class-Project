@@ -3,7 +3,7 @@ from typing import List, Optional
 import torch
 from langchain_core.documents import Document
 from langchain_community.vectorstores import FAISS
-from langchain_community.embeddings import HuggingFaceEmbeddings
+from langchain_huggingface import HuggingFaceEmbeddings
 import pandas as pd
 from dotenv import load_dotenv
 from tqdm import tqdm
