@@ -106,8 +106,8 @@ def evaluate_qa(dataset_name: str, num_questions: int = 1000, top_k: int = 20, p
         )
 
     result_df = pd.DataFrame(evaluation_results)
-    result_df.to_csv(f"evaluations/{dataset_name}_evaluation_results.csv", index=False)
-    logger.info(f"Evaluation results saved to evaluations/{dataset_name}_evaluation_results.csv")
+    result_df.to_csv(f"evaluations/{dataset_name}_{'hyde_' if hyde else ''}_evaluation_results.csv", index=False)
+    logger.info(f"Evaluation results saved to evaluations/{dataset_name}_{'hyde_' if hyde else ''}_evaluation_results.csv")
 
 
 def main():
@@ -116,7 +116,7 @@ def main():
     
     parser = argparse.ArgumentParser(description="Evaluate QA on a dataset")
     parser.add_argument("dataset_name", help="Name of the dataset to evaluate on")
-    parser.add_argument("--num_questions", type=int, default=10000, help="Number of questions to evaluate")
+    parser.add_argument("--num_questions", type=int, default=100, help="Number of questions to evaluate")
     parser.add_argument("--top_k", type=int, default=20, help="Number of top passages to retrieve")
     parser.add_argument("--print_results", action="store_true", help="Whether to print results")
     parser.add_argument("--hyde", action="store_true", help="Whether to use hyde")

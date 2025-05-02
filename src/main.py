@@ -129,7 +129,7 @@ def evaluate_qa(dataset_name: str, num_questions: int = 1000, top_k: int = 20):
         )
 
     result_df = pd.DataFrame(evaluation_results)
-    result_df.to_csv(f"{dataset_name}_evaluation_results.csv", index=False)
+    result_df.to_csv(f"{dataset_name}__evaluation_results.csv", index=False)
     logger.info(f"Evaluation results saved to {dataset_name}_evaluation_results.csv")
 
 
