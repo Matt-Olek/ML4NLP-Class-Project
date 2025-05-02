@@ -14,7 +14,7 @@ logging.basicConfig(
 # Project paths
 PROJECT_ROOT = Path(__file__).parent.parent.parent
 DATA_DIR = PROJECT_ROOT / "data"
-CACHE_DIR = PROJECT_ROOT / "cache/rag-datasets"
+CACHE_DIR = PROJECT_ROOT / "cache"
 MODELS_DIR = PROJECT_ROOT / "models"
 VECTORSTORES_DIR = PROJECT_ROOT / "vectorstores"
 
@@ -34,8 +34,3 @@ QA_MODEL = "gpt-4o-mini"
 QA_TEMPERATURE = 0
 
 DEFAULT_K = 3
-
-# API configurations for QA model
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
-if not OPENAI_API_KEY:
-    raise ValueError("OPENAI_API_KEY environment variable not set (required for QA model)")

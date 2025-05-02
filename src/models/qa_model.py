@@ -1,5 +1,4 @@
 from typing import List, Dict, Any, Optional
-from langchain_openai import ChatOpenAI
 from langchain.prompts import ChatPromptTemplate
 from langchain.schema import StrOutputParser
 from langchain.schema.runnable import RunnablePassthrough
@@ -28,12 +27,7 @@ class QuestionAnswerer:
             temperature: Temperature for model generation
         """
         self.retriever = retriever
-        self.llm = ChatOpenAI(
-            model=model_name,
-            temperature=temperature,
-            api_key=os.getenv("OPENAI_API_KEY"),
-        )
-
+        self.llm = None
         # Define the prompt template
         self.prompt = ChatPromptTemplate.from_template(
             """
@@ -51,15 +45,15 @@ class QuestionAnswerer:
         )
 
         # Create the chain
-        self.chain = (
-            {
-                "context": lambda x: x["context"],
-                "question": lambda x: x["question"],
-            }
-            | self.prompt
-            | self.llm
-            | StrOutputParser()
-        )
+        # self.chain = (
+        #     {
+        #         "context": lambda x: x["context"],
+        #         "question": lambda x: x["question"],
+        #     }
+        #     | self.prompt
+        #     | self.llm
+        #     | StrOutputParser()
+        # )
 
     def _format_context(self, context_list: List[str]) -> str:
         """Format a list of context strings into a single context string.
