@@ -5,7 +5,6 @@ import numpy as np
 import logging
 from .embedding import DocumentEmbedder
 
-logger = logging.getLogger(__name__)
 
 
 class DocumentRetriever:
@@ -24,7 +23,6 @@ class DocumentRetriever:
         """
         self.vectorstore = vectorstore
         self.embedder = embedder
-        self.similarity_threshold = similarity_threshold
 
     def set_vectorstore(self, vectorstore: FAISS) -> None:
         """Set the vector store for retrieval.
@@ -33,7 +31,6 @@ class DocumentRetriever:
             vectorstore: FAISS vectorstore to use
         """
         self.vectorstore = vectorstore
-        logger.info("Vectorstore set successfully")
 
     def set_embedder(self, embedder: DocumentEmbedder) -> None:
         """Set the embedder for query encoding.
@@ -42,7 +39,6 @@ class DocumentRetriever:
             embedder: DocumentEmbedder to use
         """
         self.embedder = embedder
-        logger.info("Embedder set successfully")
 
     def retrieve(
         self, query: str, k: int = 5, filter_criteria: Optional[Dict[str, Any]] = None
@@ -61,42 +57,8 @@ class DocumentRetriever:
             raise ValueError("Vector store not set. Call set_vectorstore first.")
 
         # Get the most similar documents
-        docs = self.vectorstore.similarity_search(query, k=k, filter=filter_criteria)
-
-        # Format the results
-        results = []
-        for doc in docs:
-            score = self._calculate_similarity_score(query, doc.page_content)
-            if score >= self.similarity_threshold:
-                results.append(
-                    {
-                        "content": doc.page_content,
-                        "metadata": doc.metadata,
-                        "score": score,
-                    }
-                )
-
-        logger.info(f"Retrieved {len(results)} documents for query: {query}")
-        return results
-
-    def _calculate_similarity_score(self, query: str, document: str) -> float:
-        """Calculate similarity score between query and document.
-
-        Args:
-            query: Query string
-            document: Document content
-
-        Returns:
-            Similarity score between 0 and 1
-        """
-        if self.embedder is None:
-            raise ValueError("Embedder not set. Call set_embedder first.")
-
-        query_embedding = self.embedder.get_embeddings(query)
-        doc_embedding = self.embedder.get_embeddings(document)
-
-        # Calculate cosine similarity
-        similarity = np.dot(query_embedding, doc_embedding) / (
-            np.linalg.norm(query_embedding) * np.linalg.norm(doc_embedding)
+        docs = self.vectorstore.similarity_search_with_score(
+            query, k=k, filter=filter_criteria
         )
-        return float(similarity)
+
+        return docs

@@ -1,8 +1,9 @@
 import os
 from typing import List, Optional
-from langchain_openai import OpenAIEmbeddings
+import torch
 from langchain_core.documents import Document
 from langchain_community.vectorstores import FAISS
+from langchain_community.embeddings import HuggingFaceEmbeddings
 import pandas as pd
 from dotenv import load_dotenv
 from tqdm import tqdm
@@ -14,15 +15,29 @@ logger = logging.getLogger(__name__)
 
 
 class DocumentEmbedder:
-    def __init__(self, model_name: str = "text-embedding-ada-002"):
-        """Initialize the document embedder with OpenAI embeddings.
+    def __init__(
+        self, 
+        model_name: str = "BAAI/bge-small-en-v1.5",
+        device: str = None
+    ):
+        """Initialize the document embedder with local HuggingFace embeddings.
 
         Args:
-            model_name: Name of the OpenAI embedding model to use
+            model_name: Name of the HuggingFace embedding model to use
+            device: Device to run the model on (None for auto-detection, "cpu", "cuda", etc.)
         """
-        self.embeddings = OpenAIEmbeddings(
-            model=model_name, api_key=os.getenv("OPENAI_API_KEY")
+        # Automatically detect GPU if available and device not specified
+        if device is None:
+            device = "cuda" if torch.cuda.is_available() else "cpu"
+        
+        # Initialize the embeddings model
+        self.embeddings = HuggingFaceEmbeddings(
+            model_name=model_name,
+            model_kwargs={"device": device},
+            encode_kwargs={"device": device, "batch_size": 32}
         )
+        logger.info(f"Using embedding model: {model_name} on {device}")
+            
         self.vectorstore = None
 
     def create_documents(self, df_passages: pd.DataFrame) -> List[Document]:

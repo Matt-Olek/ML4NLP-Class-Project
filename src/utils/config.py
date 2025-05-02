@@ -14,7 +14,7 @@ logging.basicConfig(
 # Project paths
 PROJECT_ROOT = Path(__file__).parent.parent.parent
 DATA_DIR = PROJECT_ROOT / "data"
-CACHE_DIR = PROJECT_ROOT / "cache"
+CACHE_DIR = PROJECT_ROOT / "cache/rag-datasets"
 MODELS_DIR = PROJECT_ROOT / "models"
 VECTORSTORES_DIR = PROJECT_ROOT / "vectorstores"
 
@@ -23,15 +23,19 @@ for directory in [DATA_DIR, CACHE_DIR, MODELS_DIR, VECTORSTORES_DIR]:
     directory.mkdir(exist_ok=True)
 
 # Model configurations
-EMBEDDING_MODEL = "text-embedding-3-small"
+# Embedding model configuration
+# Recommended models that work well on GPU:
+# EMBEDDING_MODEL = "sentence-transformers/all-MiniLM-L6-v2"  # Lightweight model (384 dimensions)
+# EMBEDDING_MODEL = "sentence-transformers/all-mpnet-base-v2"  # Higher quality model (768 dimensions)
+EMBEDDING_MODEL = "BAAI/bge-small-en-v1.5"  # Good performance/size tradeoff
+
+# QA model configuration
 QA_MODEL = "gpt-4o-mini"
 QA_TEMPERATURE = 0
 
-# Retrieval configurations
-SIMILARITY_THRESHOLD = 0.7
 DEFAULT_K = 3
 
-# API configurations
+# API configurations for QA model
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 if not OPENAI_API_KEY:
-    raise ValueError("OPENAI_API_KEY environment variable not set")
+    raise ValueError("OPENAI_API_KEY environment variable not set (required for QA model)")

@@ -5,7 +5,6 @@ This project implements a question-answering system using vector embeddings and 
 ## Project Structure
 
 ```
-.
 ├── src/
 │   ├── data/
 │   │   └── dataset_loader.py      # Dataset loading and caching
@@ -81,12 +80,3 @@ The project's configuration can be modified in `src/utils/config.py`. Key settin
 - Retrieval settings (similarity threshold, number of documents)
 - Directory paths
 - API configurations
-
-## Dependencies
-
-- langchain: Core framework for building the QA system
-- langchain-openai: OpenAI integration
-- langchain-community: Community integrations
-- faiss-cpu: Vector similarity search
-- pandas: Data manipulation
-- numpy: Numerical computations

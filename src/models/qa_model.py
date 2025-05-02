@@ -7,9 +7,10 @@ from dotenv import load_dotenv
 import os
 import logging
 from .retriever import DocumentRetriever
-
 load_dotenv()
-logger = logging.getLogger(__name__)
+
+# Silence httpx logger to prevent OpenAI API call logs
+logging.getLogger("httpx").setLevel(logging.WARNING)
 
 
 class QuestionAnswerer:
@@ -74,7 +75,7 @@ class QuestionAnswerer:
         )
 
     def answer_question(
-        self, question: str, context_list: Optional[List[str]] = None, k: int = 3
+        self, question: str, context_list: Optional[List[str]] = None, k: int = 10, no_answer: bool = False
     ) -> Dict[str, Any]:
         """Answer a question based on either provided context or retrieved documents.
 
@@ -93,17 +94,19 @@ class QuestionAnswerer:
                 )
             # Use retriever to get context
             results = self.retriever.retrieve(question, k=k)
-            context_list = [result["content"] for result in results]
-
+            context_list = [result[0].metadata["passage"] for result in results]
+            context_ids = [result[0].metadata["id"] for result in results]
         # Format the context
         formatted_context = self._format_context(context_list)
 
         # Get the answer from the chain
-        answer = self.chain.invoke({"context": formatted_context, "question": question})
-
-        logger.info(f"Generated answer for question: {question}")
+        if no_answer:
+            answer = "No answer generated"
+        else:
+            answer = self.chain.invoke({"context": formatted_context, "question": question})
         return {
             "question": question,
             "answer": answer,
             "context": formatted_context,
+            "context_ids": context_ids,
         }
