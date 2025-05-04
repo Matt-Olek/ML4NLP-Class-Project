@@ -10,7 +10,6 @@ from utils.config import (
     CACHE_DIR,
     VECTORSTORES_DIR,
     EMBEDDING_MODEL,
-    QA_MODEL,
 )
 from rich.logging import RichHandler
 from rich.console import Console
@@ -26,9 +25,9 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 console = Console()
+import math
 
-
-def evaluate_qa(dataset_name: str, num_questions: int = 1000, top_k: int = 20, print_results: bool = False, hyde: bool = False):
+def evaluate_qa(dataset_name: str, num_questions: int = 1000, top_k: int = 50, print_results: bool = False, hyde: bool = False):
     """Evaluate QA performance on a dataset.
 
     Args:
@@ -53,7 +52,7 @@ def evaluate_qa(dataset_name: str, num_questions: int = 1000, top_k: int = 20, p
         embedder=embedder,
     )
 
-    qa_model = QuestionAnswerer(retriever=retriever, model_name=QA_MODEL)
+    qa_model = QuestionAnswerer(retriever=retriever)
     evaluation_results = []
     # Evaluate on questions
     for idx, row in tqdm(df_questions.iterrows(), total=len(df_questions), desc="Evaluating QA"):
@@ -69,6 +68,16 @@ def evaluate_qa(dataset_name: str, num_questions: int = 1000, top_k: int = 20, p
         
         # Number of passages retrieved that are in the relevant passages ids
         num_relevant_passages = len([id for id in result['context_ids'] if id in eval(relevant_passages_ids)])
+        
+        #Calculation of Normalized Discounted Cumulative Gain (NDCG)
+        ndcg = 0
+        for i, id in enumerate(result['context_ids']):
+            if id in eval(relevant_passages_ids):
+                ndcg += 1 / math.log2(i + 1 + 1)
+        idcg = 0
+        for i, id in enumerate(eval(relevant_passages_ids)):
+            idcg += 1 / math.log2(i + 1 + 1)
+        ndcg = ndcg / idcg
 
         if print_results:
             # Rich formatted question and answer display in a single panel
@@ -93,15 +102,16 @@ def evaluate_qa(dataset_name: str, num_questions: int = 1000, top_k: int = 20, p
         evaluation_results.append(
             {
                 "id": idx,
+                "ndcg": ndcg,
+                "num_relevant_passages": num_relevant_passages,
+                "max_num_relevant_passages": len(eval(relevant_passages_ids)),
+                "retrieved_ratio": num_relevant_passages / len(eval(relevant_passages_ids)),
                 "question": question,
                 "ground_truth": row["answer"],
                 "top_k": top_k,
                 "predicted_answer": result["answer"],
                 "context_ids": result["context_ids"],
-                "relevant_passages_ids": relevant_passages_ids,
-                "num_relevant_passages": num_relevant_passages,
-                "max_num_relevant_passages": len(eval(relevant_passages_ids)),
-                "retrieved_ratio": num_relevant_passages / len(eval(relevant_passages_ids)),
+                "relevant_passages_ids": relevant_passages_ids
             }
         )
 
@@ -117,7 +127,7 @@ def main():
     parser = argparse.ArgumentParser(description="Evaluate QA on a dataset")
     parser.add_argument("dataset_name", help="Name of the dataset to evaluate on")
     parser.add_argument("--num_questions", type=int, default=100, help="Number of questions to evaluate")
-    parser.add_argument("--top_k", type=int, default=20, help="Number of top passages to retrieve")
+    parser.add_argument("--top_k", type=int, default=1000, help="Number of top passages to retrieve")
     parser.add_argument("--print_results", action="store_true", help="Whether to print results")
     parser.add_argument("--hyde", action="store_true", help="Whether to use hyde")
     

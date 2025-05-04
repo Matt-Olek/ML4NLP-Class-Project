@@ -10,17 +10,15 @@ This project implements a question-answering system using vector embeddings and 
 │   │   └── dataset_loader.py      # Dataset loading and caching
 │   ├── models/
 │   │   ├── embedding.py           # Document embedding
-│   │   ├── retriever.py           # Document retrieval
-│   │   └── qa_model.py            # Question answering
+│   │   ├── bm25_retriever.py      # BM25 retriever
+│   │   ├── hyde.py                # HyDE model
+│   │   ├── retriever.py           # Document retriever (encoder)
+│   │   └── qa_model.py            # Question answering model (not used in experiments)
 │   ├── utils/
 │   │   └── config.py              # Configuration management
-│   └── main.py                    # Main workflow
-├── data/                          # Dataset storage
-├── cache/                         # Cached data
-├── models/                        # Model storage
-├── vectorstores/                  # Vectorstore storage
-├── requirements.txt               # Project dependencies
-└── README.md                      # Project documentation
+│   └── build_vectorstore.py       # Building vectorstore
+│   └── evaluate_bm25.py           # Evaluating BM25
+│   └── evaluate.py                # Evaluating encoder-based methods
 ```
 
 ## Setup
@@ -40,43 +38,30 @@ source venv/bin/activate  # On Windows: venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
-3. Create a `.env` file with your OpenAI API key:
-
-```
-OPENAI_API_KEY=your_api_key_here
-```
-
 ## Usage
 
-The project provides two main workflows:
-
-1. Building a vectorstore from a dataset:
-
-```python
-from src.main import build_vectorstore
-
-build_vectorstore("rag-datasets/rag-mini-bioasq", num_passages=2000)
-```
-
-2. Evaluating QA performance:
-
-```python
-from src.main import evaluate_qa
-
-evaluate_qa("rag-datasets/rag-mini-bioasq", num_questions=10)
-```
-
-You can also run the complete workflow using the main script:
+1. Building a vectorstore from a dataset (for encoding and hyde evaluations):
 
 ```bash
-python src/main.py
+python .\src\build_vectorstore.py rag-datasets/rag-mini-bioasq --all_passages
 ```
 
-## Configuration
+2. Evaluating methods:
 
-The project's configuration can be modified in `src/utils/config.py`. Key settings include:
+- Run BM25 evaluation:
 
-- Model configurations (embedding model, QA model)
-- Retrieval settings (similarity threshold, number of documents)
-- Directory paths
-- API configurations
+```bash
+python .\src\evaluate_bm25.py rag-datasets/rag-mini-bioasq --num_questions 1000 --top_k 1000
+```
+
+- Run encoder evaluation:
+
+```bash
+python .\src\evaluate.py rag-datasets/rag-mini-bioasq --num_questions 1000 --top_k 1000
+```
+
+- Run hyde evaluation:
+
+```bash
+python .\src\evaluate.py rag-datasets/rag-mini-bioasq --num_questions 1000 --top_k 1000 --hyde
+```

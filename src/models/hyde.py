@@ -1,13 +1,14 @@
 import torch
 from transformers import AutoModelForCausalLM, AutoTokenizer
 import logging
+from utils.config import HYDE_MODEL
 
 logger = logging.getLogger(__name__)
 
 class HypotheticalDocumentEmbedding:
     def __init__(
         self,
-        model_name: str = "TinyLlama/TinyLlama-1.1B-Chat-v1.0",
+        model_name: str = HYDE_MODEL,
         device: str = None,
         max_length: int = 512,
     ):

@@ -23,14 +23,7 @@ for directory in [DATA_DIR, CACHE_DIR, MODELS_DIR, VECTORSTORES_DIR]:
     directory.mkdir(exist_ok=True)
 
 # Model configurations
-# Embedding model configuration
-# Recommended models that work well on GPU:
-# EMBEDDING_MODEL = "sentence-transformers/all-MiniLM-L6-v2"  # Lightweight model (384 dimensions)
-# EMBEDDING_MODEL = "sentence-transformers/all-mpnet-base-v2"  # Higher quality model (768 dimensions)
-EMBEDDING_MODEL = "BAAI/bge-small-en-v1.5"  # Good performance/size tradeoff
-
-# QA model configuration
-QA_MODEL = "gpt-4o-mini"
-QA_TEMPERATURE = 0
+EMBEDDING_MODEL = "BAAI/bge-small-en-v1.5" 
+HYDE_MODEL = "TinyLlama/TinyLlama-1.1B-Chat-v1.0"
 
 DEFAULT_K = 3
