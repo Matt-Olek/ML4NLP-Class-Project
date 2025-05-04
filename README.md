@@ -59,7 +59,7 @@ Our experiments on the RAG-Mini-BioASQ dataset (focused on biomedical question a
 1. **Clone the repository:**
 
     ```bash
-    git clone <repository-url>
+    git clone https://github.com/Matt-Olek/ML4NLP-Class-Project.git
     cd ML4NLP-Class-Project
     ```
 
