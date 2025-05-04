@@ -1,6 +1,6 @@
 # Hypothetical Document Embeddings (HyDE) - Analysis and Evaluation for Multi-Retrieval
 
-This repository contains the code and resources for the project analyzing the performance of Hypothetical Document Embeddings (HyDE) in multi-retrieval scenarios, as detailed in the accompanying paper: "[Hypotheticals Document Embedding (HyDE) - Analysis and evaluation](ProjectAnalysis.pdf)".
+This repository contains the code and resources for the project analyzing the performance of [Hypothetical Document Embeddings (HyDE](https://arxiv.org/abs/2212.10496)) in multi-retrieval scenarios, as detailed in the accompanying paper: "[Hypotheticals Document Embedding (HyDE) - Analysis and evaluation](ProjectAnalysis.pdf)".
 
 ## Overview
 
